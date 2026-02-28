@@ -8,6 +8,47 @@ const STORAGE_KEY = "kanban_board_v1";
 const uid = (prefix = "id") =>
   `${prefix}_${Math.random().toString(16).slice(2)}_${Date.now().toString(16)}`;
 
+// Theme toggle (Lights Off / On)
+const THEME_KEY = "kanban_theme_lights_on";
+
+function applyTheme(isLightsOn) {
+  document.body.classList.toggle("lights-on", isLightsOn);
+
+  const btn = document.getElementById("themeToggle");
+  const modeText = document.getElementById("modeText");
+
+  if (btn) {
+    btn.textContent = isLightsOn ? "Turn Lights Off" : "Turn Lights On";
+    btn.setAttribute("aria-pressed", String(isLightsOn));
+  }
+  if (modeText) {
+    modeText.textContent = isLightsOn ? "Lights On" : "Lights Off";
+  }
+
+  try {
+    localStorage.setItem(THEME_KEY, isLightsOn ? "1" : "0");
+  } catch {}
+}
+
+function initThemeToggle() {
+  let isLightsOn = false;
+  try {
+    isLightsOn = localStorage.getItem(THEME_KEY) === "1";
+  } catch {}
+
+  applyTheme(isLightsOn);
+
+  const btn = document.getElementById("themeToggle");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      isLightsOn = !document.body.classList.contains("lights-on");
+      applyTheme(isLightsOn);
+    });
+  }
+}
+
+initThemeToggle();
+
 /** @returns {BoardState} */
 function defaultState() {
   return {
